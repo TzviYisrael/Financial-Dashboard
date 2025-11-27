@@ -5,7 +5,7 @@ import os
 from app.core.database import engine, Base, get_db
 from app.models import user  # Import user model to register with Base
 from sqlalchemy.orm import Session
-
+from app.api import auth
 # load the variable 
 load_dotenv()
 
@@ -29,6 +29,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth.router)
 
 # Endpoints
 @app.get("/")
