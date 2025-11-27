@@ -1,10 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
+from app.core.database import engine, Base, get_db
+from app.models import user  # Import user model to register with Base
+from sqlalchemy.orm import Session
 
 # load the variable 
 load_dotenv()
+
+
+Base.metadata.create_all(bind=engine)
 
 # Create FastAPI
 app = FastAPI(
@@ -48,4 +54,20 @@ async def test_endpoint():
         "message": "Backend is ready!",
         "cors": "configured",
         "database": "Supabase cloud ready"
+    }
+
+@app.get("/api/users/count")
+async def count_users(db: Session = Depends(get_db)):
+    """
+    Count total users in database
+    Tests that SQLAlchemy connection works
+    """
+    from app.models.user import User
+    
+    count = db.query(User).count()
+    
+    return {
+        "total_users": count,
+        "message": "SQLAlchemy connection working!",
+        "database": "Supabase PostgreSQL"
     }
