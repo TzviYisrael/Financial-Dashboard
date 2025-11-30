@@ -1,11 +1,24 @@
 // src/pages/DashboardPage.tsx
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { jwtService } from '../services/jwtService';
+import { useEffect, useState } from 'react';
 
-export const DashboardPage: React.FC = () => {
-  const { user, logout } = useAuth();
+export const DashboardPage = () => {
+  const { user, token, logout } = useAuth();
   const navigate = useNavigate();
+  const [tokenInfo, setTokenInfo] = useState<{ exp: Date } | null>(null);
+
+  useEffect(() => {
+    if (token) {
+      const decoded = jwtService.decode(token);
+      if (decoded) {
+        setTokenInfo({
+          exp: new Date(decoded.exp * 1000)
+        });
+      }
+    }
+  }, [token]);
 
   const handleLogout = () => {
     logout();
@@ -33,17 +46,35 @@ export const DashboardPage: React.FC = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">
-              Welcome, {user?.name}!
+            <h2 className="text-3xl font-bold mb-4 text-gray-800">
+              Welcome, {user?.name}! 👋
             </h2>
-            <p className="text-gray-600 mb-6">
-              Email: {user?.email}
+            <p className="text-gray-600 mb-2">
+              <strong>Email:</strong> {user?.email}
             </p>
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
-              <p className="text-blue-700">
+            <p className="text-gray-600 mb-6">
+              <strong>User ID:</strong> {user?.id}
+            </p>
+
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+              <p className="text-blue-700 font-semibold">
                 🎉 You are successfully logged in to the Dashboard!
               </p>
+              <p className="text-blue-600 text-sm mt-2">
+                Your session is authenticated with a JWT token.
+              </p>
             </div>
+
+            {tokenInfo && (
+              <div className="bg-green-50 border-l-4 border-green-500 p-4">
+                <p className="text-green-700 font-semibold mb-2">
+                  🔐 Token Information
+                </p>
+                <p className="text-green-600 text-sm">
+                  Token expires at: {tokenInfo.exp.toLocaleString()}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </main>

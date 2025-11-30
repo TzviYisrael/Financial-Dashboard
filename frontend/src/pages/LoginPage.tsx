@@ -1,10 +1,10 @@
 // src/pages/LoginPage.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
 
-export const LoginPage: React.FC = () => {
+export const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,11 +20,10 @@ export const LoginPage: React.FC = () => {
 
     try {
       const response = await authService.login({ email, password });
-      login({
-        id: response.id,
-        email: response.email,
-        name: response.name
-      });
+      
+      // Sauvegarder le token ET les infos user
+      login(response.user, response.access_token);
+      
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed');
