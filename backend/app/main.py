@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 from app.core.database import engine, Base, get_db
 from app.models import user  # Import user model to register with Base
+from app.api import auth
 from sqlalchemy.orm import Session
 from app.api import auth
 # load the variable 
@@ -29,6 +30,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(auth.router)
+
 
 app.include_router(auth.router)
 
