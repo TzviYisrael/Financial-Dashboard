@@ -1,6 +1,16 @@
 // src/services/authService.ts
 import axios from 'axios';
-import { LoginCredentials, LoginResponse } from '../types/auth';
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  id: number;
+  email: string;
+  name: string;
+  message: string;
+}
 
 const API_URL = 'http://localhost:8001/api/auth';
 
